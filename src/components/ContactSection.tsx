@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "El nombre es requerido").max(100, "Nombre muy largo"),
@@ -52,16 +53,39 @@ const ContactSection = () => {
       return;
     }
 
-    // Simular envío (sin backend)
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    try {
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: result.data,
+      });
 
-    toast({
-      title: "¡Mensaje enviado!",
-      description: "Gracias por contactarnos. Te responderemos pronto.",
-    });
+      if (error) {
+        console.error("Error calling edge function:", error);
+        toast({
+          title: "Error al enviar",
+          description: "Hubo un problema al enviar tu mensaje. Inténtalo de nuevo.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
 
-    setFormData({ name: "", email: "", phone: "", message: "" });
-    setIsSubmitting(false);
+      console.log("Email sent successfully:", data);
+      toast({
+        title: "¡Mensaje enviado!",
+        description: "Gracias por contactarnos. Te responderemos pronto.",
+      });
+
+      setFormData({ name: "", email: "", phone: "", message: "" });
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast({
+        title: "Error inesperado",
+        description: "Hubo un problema al enviar tu mensaje. Inténtalo de nuevo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
