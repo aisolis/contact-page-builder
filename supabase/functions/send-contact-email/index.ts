@@ -39,7 +39,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to the user
     const confirmationEmail = await resend.emails.send({
-      from: "Aroma Dorado <onboarding@resend.dev>",
+      from: "Aroma Dorado <contacto@asolis.online>",
       to: [email],
       subject: "¡Hemos recibido tu mensaje!",
       html: `
@@ -62,10 +62,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log("Confirmation email sent:", confirmationEmail);
 
-    // Send notification email to admin (you can change this to your email)
+    // Send notification email to admin
     const notificationEmail = await resend.emails.send({
-      from: "Aroma Dorado <onboarding@resend.dev>",
-      to: ["hola@aromadorado.es"], // Change this to your actual email
+      from: "Aroma Dorado <contacto@asolis.online>",
+      to: ["alderi.solis@gmail.com"],
       subject: `Nuevo mensaje de contacto: ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
